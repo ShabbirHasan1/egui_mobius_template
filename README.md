@@ -1,6 +1,5 @@
 # egui_mobius_template
 
-[![Rust](https://github.com/saturn77/egui_mobius_template/actions/workflows/rust.yml/badge.svg)](https://github.com/saturn77/egui_mobius_template/actions/workflows/rust.yml)
 [![egui](https://img.shields.io/badge/egui-0.31.1-blue)](https://github.com/emilk/egui)
 [![egui_mobius_reactive](https://img.shields.io/badge/egui__mobius__reactive-0.3.0--alpha.23-blue)](https://github.com/saturn77/egui_mobius_reactive)
 [![egui_mobius_widgets](https://img.shields.io/badge/egui__mobius__widgets-0.3.0--alpha.23-blue)](https://github.com/saturn77/egui_mobius_widgets)
