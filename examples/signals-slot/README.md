@@ -2,6 +2,8 @@
 
 This example demonstrates how to build a powerful signal-slot based application using the egui_mobius framework. It implements an interactive RLC circuit simulator where circuit parameters are connected to real-time simulation and visualization through a signal-slot mechanism.
 
+![RLC Circuit Simulator](../../assets/rlc_circuit.png)
+
 ## Features
 
 1. **Scientific Parameter Input**
