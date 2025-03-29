@@ -7,11 +7,10 @@
 //! background task and update the UI accordingly.
 use crate::{types::ClockMessage, state::AppState};
 use egui_mobius::{EventRoute, MobiusRuntime, MobiusHandle};
+use egui_mobius_template::LogType;
 use eframe::egui;
 use std::sync::{Arc, mpsc};
-use chrono::Local;
 use tokio::sync::Notify;
-use crate::types::LogEntry;
 
 impl EventRoute for ClockMessage {
     fn route(&self) -> &str {
@@ -59,7 +58,7 @@ impl RuntimeManager {
         // rest.
         let current_time = self.state.current_time.clone().to_owned();  // Create owned Dynamic
         let use_24h = self.state.use_24h.clone().to_owned();  // Create owned Dynamic
-        let logs = self.state.logs.clone().to_owned(); // Create owned Dynamic
+        let terminal = self.state.terminal_widget.clone();
         tokio::spawn(async move {
             loop {
                 tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
@@ -71,17 +70,14 @@ impl RuntimeManager {
                 };
                 current_time.set(time_str.clone());
                 log::debug!("Time updated: {}", time_str);
-                let mut current_logs = logs.get();
-                if current_logs.len() >= 1000 {
-                    current_logs.pop_front();
-                }
-                current_logs.push_back(LogEntry {
-                    timestamp: Local::now(),
-                    source: "clock".to_string(),
-                    message: format!("Time updated: {}", time_str),
-                    color: Some(egui::Color32::from_rgb(100, 200, 255)), // Light Blue
-                });
-                logs.set(current_logs);
+                
+                // Format timestamp with date for the log
+                let timestamp_str = now.format("%Y-%m-%d %H:%M:%S").to_string();
+                let mut terminal = terminal.lock().unwrap();
+                terminal.add_log(
+                    format!("UI System(Timestamp) Event : {}", timestamp_str),
+                    LogType::Primary
+                );
             }
         });
 

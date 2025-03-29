@@ -2,8 +2,6 @@
 <div align="center">
   <img src="assets/egui_mobius_template.png" alt="egui_mobius_template screenshot">
 
-
-
 # egui_mobius_template
 
 *Scaffold your GUI software design on a single surface with two sides.*
@@ -16,8 +14,26 @@
 [![egui_mobius_widgets](https://img.shields.io/badge/egui__mobius__widgets-0.3.0--alpha.23-blue)](https://github.com/saturn77/egui_mobius_widgets)
 [![egui_taffy](https://img.shields.io/badge/egui__taffy-0.7.0-blue)](https://github.com/Veykril/egui_taffy)
 
-
 </div>
+
+A comprehensive collection of templates for building modern GUI applications with `egui` and `egui_mobius`. Each template demonstrates different architectural patterns to suit various application needs:
+
+## Available Templates
+
+### 1. Reactive Template (`examples/reactive`)
+- Pure reactive architecture using `Dynamic<T>` and `Derived<T>`
+- Best for: UI-focused applications with real-time state updates
+- Features: Color picker, logging system, dockable panels
+
+### 2. Reactive-Async Template (`examples/reactive-async`)
+- Combines reactive patterns with async runtime integration
+- Best for: Applications requiring background processing or I/O
+- Features: All reactive features plus `MobiusRuntime` integration
+
+### 3. Signal-Slots Template (`examples/signal-slots`)
+- Event-driven architecture for heavy processing
+- Best for: CPU-intensive applications, complex data processing
+- Features: Signal-slot pattern for decoupled communication
 
 A comprehensive template for building modern, reactive GUI applications with `egui` and `egui_mobius`. This template demonstrates best practices for creating responsive, thread-aware applications using the powerful features of the `egui_mobius` framework.
 
