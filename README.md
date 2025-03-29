@@ -10,8 +10,8 @@
 [![Author](https://img.shields.io/badge/author-saturn77-orange)](https://github.com/saturn77)
 
 [![egui](https://img.shields.io/badge/egui-0.31.1-blue)](https://github.com/emilk/egui)
-[![egui_mobius_reactive](https://img.shields.io/badge/egui__mobius__reactive-0.3.0--alpha.23-blue)](https://github.com/saturn77/egui_mobius_reactive)
-[![egui_mobius_widgets](https://img.shields.io/badge/egui__mobius__widgets-0.3.0--alpha.23-blue)](https://github.com/saturn77/egui_mobius_widgets)
+[![egui_mobius_reactive](https://img.shields.io/badge/egui__mobius__reactive-0.3.0--alpha.25-blue)](https://github.com/saturn77/egui_mobius_reactive)
+[![egui_mobius_widgets](https://img.shields.io/badge/egui__mobius__widgets-0.3.0--alpha.25-blue)](https://github.com/saturn77/egui_mobius_widgets)
 [![egui_taffy](https://img.shields.io/badge/egui__taffy-0.7.0-blue)](https://github.com/Veykril/egui_taffy)
 
 </div>
@@ -37,54 +37,6 @@ A comprehensive collection of templates for building modern GUI applications wit
 
 A comprehensive template for building modern, reactive GUI applications with `egui` and `egui_mobius`. This template demonstrates best practices for creating responsive, thread-aware applications using the powerful features of the `egui_mobius` framework.
 
-## Features
-
-### 1. Advanced UI Layout
-- Flexible dock-based interface with resizable panels
-- Customizable panel arrangement with intuitive drag-and-drop
-- Clean separation of UI components (Control, Logger, Settings, About)
-- Modern, responsive design that adapts to window resizing
-- Many-to-one widget relationship pattern:
-  - Reactive `TerminalWidget` shared across multiple panels
-  - Each `TabKind` can reference and update the shared widget's state
-  - Changes in one panel automatically reflect in others via reactive bindings
-
-### 2. Reactive Architecture
-- Comprehensive reactive state management:
-  - `Dynamic<T>` for mutable widget state (e.g., `TerminalWidget`'s logs)
-  - `Derived<T>` for computed values (e.g., filtered log views)
-  - Automatic UI updates when underlying data changes
-- Real-world example of reactive patterns:
-  - `TerminalWidget` demonstrates both `Dynamic` and `Derived` state
-  - Multiple panels react to single source of truth
-  - Thread-safe state handling with proper synchronization
-
-### 3. Interactive Logging System
-- Advanced color customization:
-  - Individual color pickers for each log type
-  - Real-time color updates across all panels
-  - Persistent color settings saved between sessions
-  - Default theme with carefully chosen colors
-- Two-column log layout:
-  - Time updates in left column (200px)
-  - Event details in right column (400px)
-  - Color-coded entries for visual clarity
-- Configurable log categories:
-  - Clock updates: Light Blue
-  - Slider events: Orange
-  - Option events: Soft Red/Green/Blue
-  - Primary/Secondary events: Custom colors
-  - All colors customizable through settings panel
-- Event counter and clear functionality
-  - Keeps track of all events logged
-  - Can clear all events logged
-
-### 4. State Management
-- Thread-safe state handling using `egui_mobius::Value<T>`
-- Reactive state updates with `egui_mobius_reactive::Dynamic<T>`
-- Persistent settings with JSON serialization
-- Clean state propagation between components
-
 ## Getting Started
 
 1. Clone this template:
@@ -93,29 +45,51 @@ A comprehensive template for building modern, reactive GUI applications with `eg
    cd egui_mobius_template
    ```
 
-2. Run the example:
+2. Build the examples:
    ```bash
-   cargo run --example template_example --release
+   # Build all examples
+   cargo build --examples
    ```
 
-3. Start building your application:
-   - Modify the panels in `examples/template_example/src/ui/`
-   - Add your own state management in `src/lib.rs`
-   - Customize the logger colors in `src/colors.rs`
+3. Try out the examples:
+   ```bash
+   # Basic reactive UI demo
+   cargo run --example reactive
+   
+   # Async task handling demo
+   cargo run --example reactive-async
+   
+   # RLC Circuit Simulator
+   cargo run --example signals-slot
+   ```
 
 ## Project Structure
 
 ```
 ├── src/                    # Core library code
-│   ├── lib.rs             # Main library interface
-│   └── colors.rs          # Color management
+│   └── lib.rs             # Main library interface
 └── examples/
-    └── template_example/  # Full example application
+    ├── reactive/          # **Reactive** - Basic reactive UI demo
+    │   ├── src/
+    │   │   ├── main.rs    # Application entry
+    │   │   ├── assets/    # Static resources
+    │   │   └── ui/        # UI components
+    │   └── README.md      # Example documentation
+    ├── reactive-async/    # **Reactive-Async** sophisticated task handling demo
+    │   ├── src/
+    │   │   ├── main.rs    # Application entry
+    │   │   ├── assets/    # Static resources
+    │   │   └── ui/        # UI components
+    │   └── README.md      # Example documentation
+    └── signals-slot/      # **Signals-Slots** - RLC Circuit Simulator
         ├── src/
-        │   ├── main.rs    # Application entry point
-        │   ├── ui/        # UI components
-        │   └── assets/    # Images and resources
-        └── Cargo.toml     # Example dependencies
+        │   ├── main.rs    # Application entry
+        │   ├── circuit.rs # Circuit simulation
+        │   ├── state.rs   # App state management
+        │   ├── types.rs   # Data structures
+        │   ├── slots/     # Signal-slot handlers
+        │   └── ui/        # UI components
+        └── README.md      # Example documentation
 ```
 
 ## Dependencies
