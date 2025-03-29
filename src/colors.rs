@@ -66,7 +66,7 @@ impl Default for LogColors {
 impl LogColors {
     #[allow(dead_code)]
     pub fn load() -> Self {
-        let config_path = PathBuf::from("log_colors.json");
+        let config_path = PathBuf::from("examples/template_example/log_colors.json");
         if let Ok(file_content) = fs::read_to_string(config_path) {
             if let Ok(colors) = serde_json::from_str(&file_content) {
                 return colors;
@@ -78,7 +78,7 @@ impl LogColors {
     #[allow(dead_code)]
     pub fn save(&self) {
         if let Ok(json) = serde_json::to_string_pretty(self) {
-            let _ = fs::write("log_colors.json", json);
+            let _ = fs::write("examples/template_example/log_colors.json", json);
         }
     }
 }
