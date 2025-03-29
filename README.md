@@ -1,17 +1,22 @@
+
+<div align="center">
+  <img src="assets/egui_mobius_template.png" alt="egui_mobius_template screenshot">
+
+
+
 # egui_mobius_template
+
+*Scaffold your GUI software design on single surface with two sides.*
 
 [![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/saturn77/egui_mobius_template)
 [![Author](https://img.shields.io/badge/author-saturn77-orange)](https://github.com/saturn77)
-
 [![egui](https://img.shields.io/badge/egui-0.31.1-blue)](https://github.com/emilk/egui)
 [![egui_mobius_reactive](https://img.shields.io/badge/egui__mobius__reactive-0.3.0--alpha.23-blue)](https://github.com/saturn77/egui_mobius_reactive)
 [![egui_mobius_widgets](https://img.shields.io/badge/egui__mobius__widgets-0.3.0--alpha.23-blue)](https://github.com/saturn77/egui_mobius_widgets)
 [![egui_taffy](https://img.shields.io/badge/egui__taffy-0.7.0-blue)](https://github.com/Veykril/egui_taffy)
 
 
-<p align="center">
-  <img src="assets/egui_mobius_template.png" alt="egui_mobius_template screenshot">
-</p>
+</div>
 
 A comprehensive template for building modern, reactive GUI applications with `egui` and `egui_mobius`. This template demonstrates best practices for creating responsive, thread-aware applications using the powerful features of the `egui_mobius` framework.
 
