@@ -1,5 +1,8 @@
 # egui_mobius_template
 
+[![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/saturn77/egui_mobius_template)
+[![Author](https://img.shields.io/badge/author-saturn77-orange)](https://github.com/saturn77)
+
 [![egui](https://img.shields.io/badge/egui-0.31.1-blue)](https://github.com/emilk/egui)
 [![egui_mobius_reactive](https://img.shields.io/badge/egui__mobius__reactive-0.3.0--alpha.23-blue)](https://github.com/saturn77/egui_mobius_reactive)
 [![egui_mobius_widgets](https://img.shields.io/badge/egui__mobius__widgets-0.3.0--alpha.23-blue)](https://github.com/saturn77/egui_mobius_widgets)
