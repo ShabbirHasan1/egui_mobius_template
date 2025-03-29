@@ -21,6 +21,8 @@ dirs = "5.0" # For config directory paths
 tokio = {version = "1.44.1", features = ["full"]}
 env_logger = "0.11.7"
 log = "0.4.27"
+egui_plot = "0.31.0"
+ndarray = "0.16.1"
 
 [[example]]
 name = "reactive"
@@ -31,5 +33,5 @@ name = "reactive-async"
 path = "examples/reactive-async/src/main.rs"
 
 [[example]]
-name = "signal-slots"
-path = "examples/signal-slots/src/main.rs"
+name = "signals-slot"
+path = "examples/signals-slot/src/main.rs"
