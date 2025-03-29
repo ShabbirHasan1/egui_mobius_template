@@ -3,7 +3,7 @@ use egui_dock::{DockArea, DockState, NodeIndex, Style, SurfaceIndex};
 use egui_mobius_template::{TerminalWidget, LogColors};
 
 mod ui;
-use ui::{settings_panel, control_panel};
+use ui::{settings_panel, control_panel, TaffyPanel};
 
 use std::sync::{Arc, Mutex};
 use egui_mobius_reactive::Dynamic;
@@ -16,6 +16,7 @@ enum TabKind {
     Control,
     About,
     Logger,  // New tab for enhanced logging
+    Taffy,   // Demo of egui_taffy layout
 }
 struct Tab {
     kind      : TabKind,
@@ -32,6 +33,7 @@ impl Tab {
             TabKind::Control => "Control".to_string(),
             TabKind::About => "About".to_string(),
             TabKind::Logger => "Logger".to_string(),
+            TabKind::Taffy => "Taffy Layout".to_string(),
         }
     }
     fn content(&self, ui: &mut egui::Ui, terminal_widget: &mut TerminalWidget, 
@@ -55,6 +57,9 @@ impl Tab {
             }
             TabKind::Logger => {
                 crate::ui::logger_panel::LoggerPanel::render(ui, terminal_widget);
+            }
+            TabKind::Taffy => {
+                TaffyPanel::render(ui);
             }
         }
     }
@@ -97,17 +102,18 @@ impl Default for MyApp {
         let colors = Arc::new(Mutex::new(LogColors::default()));
         let terminal_widget = Dynamic::new(TerminalWidget::new(egui::Context::default(), colors.lock().unwrap().clone()));
 
-        // Initialize dock state with Control and About tabs
+        // Initialize dock state with Control, About, and Taffy tabs
         let mut dock_state = DockState::new(vec![
             Tab::new(TabKind::Control, SurfaceIndex::main(), NodeIndex(0)),
             Tab::new(TabKind::About, SurfaceIndex::main(), NodeIndex(1)),
+            Tab::new(TabKind::Taffy, SurfaceIndex::main(), NodeIndex(2)),
         ]);
 
         // First split the root horizontally - left takes 30% width
         let [left, _right] = dock_state.main_surface_mut().split_right(
             NodeIndex::root(),
             0.3, // Left takes 30% of width
-            vec![Tab::new(TabKind::Logger, SurfaceIndex::main(), NodeIndex(2))],
+            vec![Tab::new(TabKind::Logger, SurfaceIndex::main(), NodeIndex(3))],
         );
 
         // Then split the left pane vertically to put Settings at bottom
