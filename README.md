@@ -1,34 +1,78 @@
-# MobiusLoop
+# egui_mobius_template
 
-MobiusLoop is a reactive application template for building modern `egui` applications with `egui_mobius`. 
-
-There is often a need to have a shell or logger or terminal type functionality in an egui application, and having a well tested and versatile widget that is easily customizable facilitates rapid design development with reliable performance. 
-
-# Requirements 
-The requirements are well established to define the expectations 
-for the widget. 
-
-1. Should be able to be inserted into any `egui` with `eframe` application 
-2. Should have a minimal amount of arguments in it's API to interface to the existing GUI application 
-3. By consuming a message data structure, will `react` to changes by applying a handler function and then post the resulting text into the shell.  
+A comprehensive template for building modern, reactive GUI applications with `egui` and `egui_mobius`. This template demonstrates best practices for creating responsive, thread-aware applications using the powerful features of the `egui_mobius` framework.
 
 ## Features
 
-Features are enabled by using the `Dynamic<T>` from the crate `egui_mobius_reactive.`
+### 1. Advanced UI Layout
+- Flexible dock-based interface with resizable panels
+- Customizable panel arrangement with intuitive drag-and-drop
+- Clean separation of UI components (Control, Logger, Settings, About)
+- Modern, responsive design that adapts to window resizing
 
-- Chained reactivity can be done with `Derived<T>`
-- Thread safe operation, underlying data types are Arc<Mutex<T>>
-- Can be easily modified to make your own customized ReShell widget 
+### 2. Reactive Architecture
+- State management via `Dynamic<T>` for mutable state
+- Automatic updates through `Derived<T>` for computed values
+- Clean separation of concerns with in-place state updates
+- Thread-safe state handling with proper synchronization
 
-## Usage
-Add `ReShell` to your `egui` application:
-```rust
-use reshell::TerminalWidget;
+### 3. Interactive Logging System
+- Real-time event logging with customizable colors
+- Two-column layout for different event types
+- Color-coded event categories for better visibility
+- Event counter and clear functionality
 
-let terminal_widget = TerminalWidget::new();
+### 4. State Management
+- Thread-safe state handling using `egui_mobius::Value<T>`
+- Reactive state updates with `egui_mobius_reactive::Dynamic<T>`
+- Persistent settings with JSON serialization
+- Clean state propagation between components
+
+## Getting Started
+
+1. Clone this template:
+   ```bash
+   git clone https://github.com/saturn77/egui_mobius_template.git
+   cd egui_mobius_template
+   ```
+
+2. Run the example:
+   ```bash
+   cargo run --example template_example --release
+   ```
+
+3. Start building your application:
+   - Modify the panels in `examples/template_example/src/ui/`
+   - Add your own state management in `src/lib.rs`
+   - Customize the logger colors in `src/colors.rs`
+
+## Project Structure
+
 ```
-Generally there will be a Dynamic<T> on the app state that can be modified in the main UiApp code. 
-See the example `dock_reshell` for an example of updating the state of the TerminalWidget. 
+├── src/                    # Core library code
+│   ├── lib.rs             # Main library interface
+│   └── colors.rs          # Color management
+└── examples/
+    └── template_example/  # Full example application
+        ├── src/
+        │   ├── main.rs    # Application entry point
+        │   ├── ui/        # UI components
+        │   └── assets/    # Images and resources
+        └── Cargo.toml     # Example dependencies
+```
 
-Also take a look at the code in the lib for reshell itself, and you will see how compact the 
-codebase is for the widget. 
+## Dependencies
+
+- `egui` - Immediate mode GUI framework
+- `egui_mobius` - Reactive programming framework
+- `egui_dock` - Docking system for panel management
+- `serde` - Serialization for settings
+- `once_cell` - Static initialization
+
+## Contributing
+
+This template is maintained by Saturn Rocket Company. Feel free to open issues or submit pull requests if you have suggestions for improvements.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
