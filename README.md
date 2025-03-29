@@ -6,7 +6,7 @@
 
 # egui_mobius_template
 
-*Scaffold your GUI software design on single surface with two sides.*
+*Scaffold your GUI software design on a single surface with two sides.*
 
 [![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/saturn77/egui_mobius_template)
 [![Author](https://img.shields.io/badge/author-saturn77-orange)](https://github.com/saturn77)
