@@ -24,7 +24,7 @@ struct RlcApp {
 
 impl RlcApp {
     fn new(
-        cc: &eframe::CreationContext<'_>,
+        _cc: &eframe::CreationContext<'_>,
         state: Arc<AppState>,
         signal_to_sim: Signal<CircuitMessage>,
         mut slot_from_sim: Slot<CircuitMessage>,
@@ -68,7 +68,7 @@ impl eframe::App for RlcApp {
                     let panel_width = 300.0;
                     let panel_height = ui.available_height();
                     
-                    egui::Frame::none()
+                    egui::Frame::new()
                         .fill(ui.style().visuals.window_fill())
                         .show(ui, |ui| {
                             ui.set_width(panel_width);
@@ -84,7 +84,7 @@ impl eframe::App for RlcApp {
 
                     // Right panel - Plot
                     let available_width = ui.available_width();
-                    egui::Frame::none()
+                    egui::Frame::new()
                         .fill(ui.style().visuals.window_fill())
                         .show(ui, |ui| {
                             ui.set_min_width(available_width);
@@ -103,7 +103,7 @@ fn main() {
     
     // Create signal/slot pairs for simulation thread
     let (signal_to_sim, slot_to_sim) = factory::create_signal_slot::<CircuitMessage>();
-    let (slot_from_sim, signal_from_sim) = factory::create_signal_slot::<CircuitMessage>();
+    let (_slot_from_sim, signal_from_sim) = factory::create_signal_slot::<CircuitMessage>();
 
     // Start simulation thread
     let state_clone = state.clone();

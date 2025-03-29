@@ -25,9 +25,12 @@ impl AppState {
     }
 
     pub fn set_simulation_results(&self, results: SimulationResults) {
-        self.results.set(Some(results));
-        self.error_message.set(None);
-        self.sim_state.set(SimulationState::Ready);
+        // Update results only if different to prevent unnecessary redraws
+        if self.results.get().as_ref() != Some(&results) {
+            self.results.set(Some(results));
+            self.error_message.set(None);
+            self.sim_state.set(SimulationState::Ready);
+        }
     }
 
     pub fn set_error(&self, error: String) {

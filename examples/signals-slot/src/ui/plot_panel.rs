@@ -8,45 +8,53 @@ pub fn show_plot_panel(ui: &mut Ui, state: &Arc<AppState>) {
         ui.heading("Circuit Response");
         ui.add_space(8.0);
         
+        let available_height = ui.available_height() - 20.0;
+        let available_width = ui.available_width();
+
         if let Some(results) = state.results.get() {
-            let voltage_points: PlotPoints = results.time_series.iter()
-                .zip(results.voltage_series.iter())
-                .map(|(&t, &v)| [t * 1000.0, v])  // Convert to ms
-                .collect();
-
-            let current_points: PlotPoints = results.time_series.iter()
-                .zip(results.current_series.iter())
-                .map(|(&t, &i)| [t * 1000.0, i])
-                .collect();
-
-            let available_height = ui.available_height() - 20.0;
-            Plot::new("rlc_plot")
+            // Only create plot points if we have results
+            let plot = Plot::new("rlc_plot")
                 .height(available_height)
-                .width(ui.available_width())
+                .width(available_width)
                 .legend(Legend::default())
-                .x_axis_label("Time (ms)")
+                .x_axis_label("Time (s)")
                 .y_axis_label("Voltage (V) / Current (A)")
                 .allow_zoom(true)
                 .allow_drag(true)
                 .allow_scroll(true)
                 .include_x(0.0)
                 .include_y(0.0)
-                .auto_bounds(true)
-                .show(ui, |plot_ui| {
-                    plot_ui.line(Line::new(voltage_points)
-                        .name("Voltage")
-                        .color(Color32::from_rgb(100, 200, 255))
-                        .width(2.0));
-                    plot_ui.line(Line::new(current_points)
-                        .name("Current")
-                        .color(Color32::from_rgb(255, 150, 150))
-                        .width(2.0));
-                });
+                .show_background(true)
+                .show_axes([true, true])
+                .show_grid([true, true]);
+
+            // Show plot with cached data
+            plot.show(ui, |plot_ui| {
+                // Convert points only when needed
+                let voltage_points: PlotPoints = results.time_series.iter()
+                    .zip(results.voltage_series.iter())
+                    .map(|(&t, &v)| [t, v])
+                    .collect();
+
+                let current_points: PlotPoints = results.time_series.iter()
+                    .zip(results.current_series.iter())
+                    .map(|(&t, &i)| [t, i])
+                    .collect();
+
+                plot_ui.line(Line::new(voltage_points)
+                    .name("Voltage")
+                    .color(Color32::from_rgb(100, 200, 255))
+                    .width(2.0));
+                    
+                plot_ui.line(Line::new(current_points)
+                    .name("Current")
+                    .color(Color32::from_rgb(255, 150, 150))
+                    .width(2.0));
+            });
         } else {
-            let available_height = ui.available_height() - 20.0;
-            ui.allocate_space(egui::vec2(ui.available_width(), available_height));
+            ui.allocate_space(egui::vec2(available_width, available_height));
             ui.centered_and_justified(|ui| {
-                ui.label("No simulation results yet. Click START to begin simulation.");
+                ui.label("No simulation results yet. Click RUN to begin simulation.");
             });
         }
     });

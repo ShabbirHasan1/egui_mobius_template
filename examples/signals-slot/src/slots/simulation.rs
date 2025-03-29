@@ -5,7 +5,7 @@ use egui_mobius::{
 use std::sync::Arc;
 use crate::{
     circuit::Circuit,
-    types::{CircuitMessage, CircuitParameters, SimulationResults, SimulationState},
+    types::{CircuitMessage, SimulationState},
     state::AppState,
 };
 
@@ -22,26 +22,25 @@ pub fn simulation_slot_thread(
                 state.update_parameters(params);
             }
             CircuitMessage::SimulationStarted => {
-                // Only start if we're in IDLE state
-                if state.sim_state.get() == SimulationState::Idle {
+                // Only start if we're in Ready state
+                if state.sim_state.get() == SimulationState::Ready {
                     let params = state.parameters.get();
                     state.start_simulation();
                     let circuit = Circuit::new(params);
-                    let results = circuit.simulate();
-                    state.set_simulation_results(results.clone());
-                    let _ = signal_to_ui.send(CircuitMessage::SimulationCompleted(results));
-                }
-            }
-            CircuitMessage::StopSimulation => {
-                if state.sim_state.get() == SimulationState::Active {
-                    state.stop_simulation();
-                    let _ = signal_to_ui.send(CircuitMessage::SimulationCompleted(
-                        state.results.get().unwrap_or_else(|| SimulationResults {
-                            time_series: vec![],
-                            voltage_series: vec![],
-                            current_series: vec![],
-                        })
-                    ));
+                    
+                    match circuit.simulate() {
+                        Ok(results) => {
+                            state.set_simulation_results(results.clone());
+                            let _ = signal_to_ui.send(CircuitMessage::SimulationCompleted(results));
+                        }
+                        Err(e) => {
+                            state.set_error(e.to_string());
+                            let _ = signal_to_ui.send(CircuitMessage::SimulationError(e.to_string()));
+                        }
+                    }
+                    
+                    // Always ensure we return to Ready state
+                    state.sim_state.set(SimulationState::Ready);
                 }
             }
             _ => {} // Ignore other messages

@@ -2,22 +2,41 @@
 
 This example demonstrates how to build a powerful signal-slot based application using the egui_mobius framework. It implements an interactive RLC circuit simulator where circuit parameters are connected to real-time simulation and visualization through a signal-slot mechanism.
 
-## Benefits of Signal-Slot Architecture
+## Features
 
-1. **Decoupled Computation**
+1. **Scientific Parameter Input**
+   - Support for scientific notation (e.g., 1e-6 F for capacitance)
+   - Base unit display (Ω, F, H) without prefixes
+   - Real-time validation and error handling
+
+2. **Robust State Management**
+   - Proper simulation state transitions (Ready → Running → Complete)
+   - Error recovery and automatic state reset
+   - Clear feedback on simulation status
+
+3. **Signal-Slot Architecture Benefits**
    - Heavy simulation runs in a separate slot
    - UI remains responsive during computation
-   - Results automatically propagate back to the view
+   - Clean error propagation through signal-slot channels
+   - Automatic UI updates on parameter changes
 
-2. **Interactive Parameter Updates**
-   - Real-time updates when R, L, C values change
-   - Signals trigger immediate simulation refresh
-   - Smooth integration between UI and computation
+4. **Numerical Integration**
+   - Choice of numerical solvers:
+     * Euler method - efficient for quick simulations
+     * RK4 - higher accuracy, important for extended runs
+     * Trapezoidal - stable for large timesteps
+   - Solver selection most relevant for:
+     * Long-running simulations (>100k steps)
+     * High-precision requirements
+     * Complex resonant behavior
+   - Configurable parameters with real-time feedback
 
-3. **Clean Data Flow**
-   - UI components emit signals on parameter changes
-   - Computation slot receives updates and runs simulation
-   - Results flow back through reactive bindings to plots
+5. **Performance Optimizations**
+   - Pre-allocated ndarray buffers for numerical computation
+   - Efficient memory management with Vec capacity hints
+   - Zero-copy data transfer between simulation and UI
+   - Smart data downsampling for plot rendering
+   - Minimal allocations during simulation loops
 
 ## Technical Features
 

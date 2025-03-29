@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use ndarray::Array1;
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum SimulationState {
@@ -39,7 +38,7 @@ impl Default for CircuitParameters {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SimulationResults {
     pub time_series: Vec<f64>,
     pub voltage_series: Vec<f64>,
