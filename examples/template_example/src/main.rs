@@ -1,16 +1,32 @@
-use eframe::egui;
-use egui_dock::{DockArea, DockState, NodeIndex, Style, SurfaceIndex};
-use egui_mobius_template::{TerminalWidget, LogColors};
-
+//! Framework Template for egui_mobius
+//! 
+//! This is a template for creating applications using egui_mobius
+//! libraries, with a focus on modular architecture as the ui elements
+//! are located in /ui and the core application logic is in /main
+//! There are some macros in /logging_macros.rs that are used to 
+//! handle logging in a more efficient way. The terminal widget is 
+//! located in /ui/logger_panel.rs, which references the terminal widget
+//! define in the root of this project, at /src/lib.rs. 
+//! 
+//! 
+// egui_mobius and template crates
+mod logging_macros;
 mod ui;
 use ui::{settings_panel, control_panel, TaffyPanel};
-
-use std::sync::{Arc, Mutex};
+use egui_mobius_template::{TerminalWidget, LogColors};
 use egui_mobius_reactive::Dynamic;
 
-mod logging_macros;
+// egui and egui_dock crates
+use eframe::egui;
+use egui_dock::{DockArea, DockState, NodeIndex, Style, SurfaceIndex};
 
-// Define the tabs for the DockArea
+// Standard library
+use std::sync::{Arc, Mutex};
+
+/// TabKind
+/// 
+/// Define the tabs for the DockArea - where each one holds 
+/// a different panel of the application. 
 enum TabKind {
     Settings,
     Control,
@@ -18,6 +34,17 @@ enum TabKind {
     Logger,  // New tab for enhanced logging
     Taffy,   // Demo of egui_taffy layout
 }
+
+/// Tab
+/// 
+/// Define the overall container struct for the tabs of the application.
+/// 
+/// Define the content for each TabKind in the Tab struct.
+/// 
+/// Note that the terminal widget is passed to the primary tabs which 
+/// are Settings, Control, and Logger. These tabs are the primary tabs
+/// that have either events or data to log. If one were to extend the 
+/// taffy tab, it would also need to pass the terminal widget.
 struct Tab {
     kind      : TabKind,
     _surface  : SurfaceIndex,
@@ -67,6 +94,9 @@ impl Tab {
 }
 
 /// Tab viewer for DockArea
+/// 
+/// Construct the view for the tabs of the application.
+/// 
 struct TabViewer<'a> {
     terminal_widget  : &'a mut Dynamic<TerminalWidget>,
     slider_value     : &'a mut f32,
@@ -84,20 +114,30 @@ impl egui_dock::TabViewer for TabViewer<'_> {
 
     fn ui(&mut self, ui: &mut egui::Ui, tab: &mut Self::Tab) {
         let mut terminal = self.terminal_widget.get();
-        tab.content(ui, &mut terminal, &mut self.slider_value, &mut self.selected_option, &mut self.is_running, &self.colors);
+        tab.content(ui, 
+            &mut terminal, 
+            &mut self.slider_value, 
+            &mut self.selected_option, 
+            &mut self.is_running, &self.colors);
+
         self.terminal_widget.set(terminal);
     }
 }
 
 /// Main application
 pub struct MyApp {
-    dock_state: DockState<Tab>,
-    terminal_widget: Dynamic<TerminalWidget>,
-    slider_value: f32,
-    selected_option: usize,
-    is_running: bool,
-    colors: Arc<Mutex<LogColors>>,
+    dock_state       : DockState<Tab>,
+    terminal_widget  : Dynamic<TerminalWidget>,
+    slider_value     : f32,
+    selected_option  : usize,
+    is_running       : bool,
+    colors           : Arc<Mutex<LogColors>>,
 }
+
+/// Drop implementation for MyApp
+/// 
+/// Drop implementation is used to save application data when 
+/// the application is closed.
 impl Drop for MyApp {
     fn drop(&mut self) {
         // Save colors when app is dropped
@@ -128,6 +168,15 @@ impl eframe::App for MyApp {
             );
     }
 }
+
+/// Main function
+/// 
+/// The main function is the entry point for the application.
+/// 
+/// It is responsible for creating the application window and running
+/// the application. Also note that it handles loading the colors from
+/// the config file and saving them when the application is closed.
+/// 
 fn main() -> Result<(), eframe::Error> {
     let native_options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()

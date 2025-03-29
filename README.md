@@ -28,18 +28,40 @@ A comprehensive template for building modern, reactive GUI applications with `eg
 - Customizable panel arrangement with intuitive drag-and-drop
 - Clean separation of UI components (Control, Logger, Settings, About)
 - Modern, responsive design that adapts to window resizing
+- Many-to-one widget relationship pattern:
+  - Reactive `TerminalWidget` shared across multiple panels
+  - Each `TabKind` can reference and update the shared widget's state
+  - Changes in one panel automatically reflect in others via reactive bindings
 
 ### 2. Reactive Architecture
-- State management via `Dynamic<T>` for mutable state
-- Automatic updates through `Derived<T>` for computed values
-- Clean separation of concerns with in-place state updates
-- Thread-safe state handling with proper synchronization
+- Comprehensive reactive state management:
+  - `Dynamic<T>` for mutable widget state (e.g., `TerminalWidget`'s logs)
+  - `Derived<T>` for computed values (e.g., filtered log views)
+  - Automatic UI updates when underlying data changes
+- Real-world example of reactive patterns:
+  - `TerminalWidget` demonstrates both `Dynamic` and `Derived` state
+  - Multiple panels react to single source of truth
+  - Thread-safe state handling with proper synchronization
 
 ### 3. Interactive Logging System
-- Real-time event logging with customizable colors
-- Two-column layout for different event types
-- Color-coded event categories for better visibility
+- Advanced color customization:
+  - Individual color pickers for each log type
+  - Real-time color updates across all panels
+  - Persistent color settings saved between sessions
+  - Default theme with carefully chosen colors
+- Two-column log layout:
+  - Time updates in left column (200px)
+  - Event details in right column (400px)
+  - Color-coded entries for visual clarity
+- Configurable log categories:
+  - Clock updates: Light Blue
+  - Slider events: Orange
+  - Option events: Soft Red/Green/Blue
+  - Primary/Secondary events: Custom colors
+  - All colors customizable through settings panel
 - Event counter and clear functionality
+  - Keeps track of all events logged
+  - Can clear all events logged
 
 ### 4. State Management
 - Thread-safe state handling using `egui_mobius::Value<T>`
