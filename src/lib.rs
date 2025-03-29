@@ -1,6 +1,7 @@
 use eframe::egui;
 use egui::{Color32, RichText};
 use std::sync::Arc;
+use std::collections::VecDeque;
 use egui_mobius_reactive::{Dynamic, Derived, ReactiveValue};
 
 pub mod colors;
@@ -71,17 +72,33 @@ impl std::fmt::Debug for LogType {
 }
 
 
+pub const MAX_LOGS: usize = 1000; // Maximum number of logs to keep in memory
+
 #[derive(Clone)]
 pub struct TerminalWidget {
-    pub logs          : Dynamic<Vec<(String, LogType)>>,
+    pub logs          : Dynamic<VecDeque<(String, LogType)>>,
     pub colors        : Dynamic<LogColors>,
     pub rich_text     : Derived<Vec<RichText>>,
     pub repaint       : egui::Context,
 }
 
 impl TerminalWidget {
+    /// Add a new log entry, trimming old logs if necessary
+    pub fn add_log(&mut self, msg: String, log_type: LogType) {
+        let mut logs = self.logs.get();
+        logs.push_back((msg, log_type));
+        
+        // Maintain circular buffer - remove oldest entry if at capacity
+        if logs.len() >= MAX_LOGS {
+            logs.pop_front();
+        }
+        
+        self.logs.set(logs);
+        self.repaint.request_repaint();
+    }
+
     pub fn new(repaint: egui::Context, colors: LogColors) -> Self {
-        let logs = Dynamic::new(Vec::new());
+        let logs = Dynamic::new(VecDeque::with_capacity(MAX_LOGS));
         let colors = Dynamic::new(colors);
 
         // Create derived rich text from logs and colors
@@ -107,10 +124,10 @@ impl TerminalWidget {
                             LogType::CustomEvent => colors.custom_event,
                             LogType::Checkbox => colors.custom_event, // Use custom_event color for checkbox
                             LogType::RunStop => colors.run_stop_log,
-                            LogType::Timestamp => colors.timestamp,
+                            LogType::Timestamp => colors.time_format,
                             LogType::Default => Color32::WHITE,
-                            LogType::Primary => colors.primary,
-                            LogType::Secondary => colors.secondary,
+                            LogType::Primary => colors.clock,  // Use clock color for primary events
+                            LogType::Secondary => colors.custom_event,  // Use custom_event color for secondary events
                         };
                         RichText::new(msg).color(color)
                     })  
@@ -129,11 +146,7 @@ impl TerminalWidget {
 
     /// Updates the color scheme for the terminal
     pub fn update_colors(&mut self, new_colors: LogColors) {
-        // First update the logs to force a re-evaluation
-        let logs = self.logs.get();
-        self.logs.set(logs);
-
-        // Then update the colors
+        // Update the colors
         self.colors.set(new_colors);
 
         // Force a repaint to show the changes

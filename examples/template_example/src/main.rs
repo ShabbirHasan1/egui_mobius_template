@@ -38,7 +38,7 @@ impl Tab {
     }
     fn content(&self, ui: &mut egui::Ui, terminal_widget: &mut TerminalWidget, 
               slider_value: &mut f32, selected_option: &mut usize, is_running: &mut bool,
-              _colors: &Arc<Mutex<LogColors>>) {
+              colors: &Arc<Mutex<LogColors>>) {
         match self.kind {
             TabKind::Settings => {
                 settings_panel::SettingsPanel::render(
@@ -47,6 +47,7 @@ impl Tab {
                     slider_value,
                     selected_option,
                     is_running,
+                    colors,
                 );
             }
             TabKind::Control => {
@@ -97,39 +98,11 @@ pub struct MyApp {
     is_running: bool,
     colors: Arc<Mutex<LogColors>>,
 }
-impl Default for MyApp {
-    fn default() -> Self {
-        let colors = Arc::new(Mutex::new(LogColors::default()));
-        let terminal_widget = Dynamic::new(TerminalWidget::new(egui::Context::default(), colors.lock().unwrap().clone()));
-
-        // Initialize dock state with Control, About, and Taffy tabs
-        let mut dock_state = DockState::new(vec![
-            Tab::new(TabKind::Control, SurfaceIndex::main(), NodeIndex(0)),
-            Tab::new(TabKind::About, SurfaceIndex::main(), NodeIndex(1)),
-            Tab::new(TabKind::Taffy, SurfaceIndex::main(), NodeIndex(2)),
-        ]);
-
-        // First split the root horizontally - left takes 30% width
-        let [left, _right] = dock_state.main_surface_mut().split_right(
-            NodeIndex::root(),
-            0.3, // Left takes 30% of width
-            vec![Tab::new(TabKind::Logger, SurfaceIndex::main(), NodeIndex(3))],
-        );
-
-        // Then split the left pane vertically to put Settings at bottom
-        let [_, _] = dock_state.main_surface_mut().split_below(
-            left,
-            0.7, // Top takes 70% height
-            vec![Tab::new(TabKind::Settings, SurfaceIndex::main(), NodeIndex(3))],
-        );
-
-        Self {
-            dock_state,
-            terminal_widget,
-            slider_value: 1.0,
-            selected_option: 0,
-            is_running: false,
-            colors,
+impl Drop for MyApp {
+    fn drop(&mut self) {
+        // Save colors when app is dropped
+        if let Ok(colors) = self.colors.lock() {
+            colors.save();
         }
     }
 }
@@ -170,7 +143,47 @@ fn main() -> Result<(), eframe::Error> {
         native_options,
         Box::new(|cc| {
             egui_extras::install_image_loaders(&cc.egui_ctx);
-            Ok(Box::<MyApp>::default())
+            
+            // Load saved colors from config or use defaults
+            let colors = LogColors::load();
+
+            // Create initial dock state
+            let mut dock_state = DockState::new(vec![
+                Tab::new(TabKind::Control, SurfaceIndex::main(), NodeIndex(0)),
+                Tab::new(TabKind::About, SurfaceIndex::main(), NodeIndex(1)),
+                Tab::new(TabKind::Taffy, SurfaceIndex::main(), NodeIndex(2)),
+            ]);
+
+            // Initialize dock layout
+            let [left, _] = dock_state.main_surface_mut().split_right(
+                NodeIndex::root(),
+                0.3,
+                vec![Tab::new(TabKind::Logger, SurfaceIndex::main(), NodeIndex(3))],
+            );
+            let [_, _] = dock_state.main_surface_mut().split_below(
+                left,
+                0.7,
+                vec![Tab::new(TabKind::Settings, SurfaceIndex::main(), NodeIndex(3))],
+            );
+
+            // Create Arc<Mutex> after getting the colors
+            let colors = Arc::new(Mutex::new(colors));
+            
+            // Create terminal widget first
+            let terminal_widget = {
+                let colors = colors.lock().unwrap().clone();
+                Dynamic::new(TerminalWidget::new(cc.egui_ctx.clone(), colors))
+            };
+            
+            // Create app with loaded colors and initialized dock state
+            Ok(Box::new(MyApp {
+                dock_state,
+                terminal_widget,
+                slider_value: 1.0,
+                selected_option: 0,
+                is_running: false,
+                colors,
+            }))
         })
     )
 }

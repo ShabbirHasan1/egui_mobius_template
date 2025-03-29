@@ -12,12 +12,12 @@ impl TaffyPanel {
             .style(taffy::Style {
                 display: taffy::Display::Flex,
                 flex_direction: taffy::FlexDirection::Row,
-                align_items: Some(taffy::AlignItems::Stretch),
-                padding: length(4.),
-                gap: length(8.),
+                align_items: Some(taffy::AlignItems::Start),
+                padding: length(8.),
+                gap: length(16.),
                 size: taffy::Size {
                     width: percent(1.0),
-                    height: percent(1.0),
+                    height: taffy::Dimension::Auto,
                 },
                 ..Default::default()
             })
@@ -29,8 +29,8 @@ impl TaffyPanel {
                     gap: length(8.0),
                     flex_grow: 0.0,
                     flex_shrink: 0.0,
-                    flex_basis: length(300.0),
-                    padding: length(16.0),
+                    flex_basis: length(160.0),
+                    padding: length(8.0),
                     ..Default::default()
                 })
                 .add(|tui| {
@@ -49,10 +49,10 @@ impl TaffyPanel {
                     gap: length(8.0),
                     flex_grow: 1.0,
                     flex_shrink: 0.0,
-                    padding: length(16.0),
+                    padding: length(8.0),
                     size: taffy::Size {
-                        width: length(800.0),
-                        height: percent(100.0),
+                        width: length(200.0),
+                        height: taffy::Dimension::Auto,
                     },
                     ..Default::default()
                 })

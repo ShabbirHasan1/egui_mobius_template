@@ -2,7 +2,9 @@
 //! These macros simplify common logging patterns using the Latch pattern
 
 use std::ops::{Deref, DerefMut};
+use std::collections::VecDeque;
 use egui_mobius_reactive::Dynamic;
+use egui_mobius_template::MAX_LOGS;
 
 /// A utility struct that provides automatic get/set functionality for Dynamic values
 ///
@@ -18,6 +20,18 @@ impl<'a, T: Clone + Send + 'static> Latch<'a, T> {
             dynamic,
             value: dynamic.get(),
         }
+    }
+
+    /// Push to back of VecDeque with circular buffer behavior
+    pub fn push_back<U>(&mut self, item: U)
+    where
+        Self: DerefMut<Target = VecDeque<U>>,
+        U: Clone,
+    {
+        if self.len() >= MAX_LOGS {
+            self.pop_front();
+        }
+        self.deref_mut().push_back(item);
     }
 }
 
@@ -47,7 +61,7 @@ macro_rules! log_to_terminal {
     ($widget:expr, $log_entry:expr) => {
         {
             let mut latch = $crate::logging_macros::Latch::new(&$widget.logs);
-            latch.push($log_entry);
+            latch.push_back($log_entry);
         }
     };
 }
@@ -68,7 +82,7 @@ macro_rules! set_timestamp_log {
 
             // Using Latch pattern internally
             let mut latch = Latch::new(&$widget.logs);
-            latch.push((log_string, $log_type));
+            latch.push_back((log_string, $log_type));
         }
     };
 }

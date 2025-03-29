@@ -27,6 +27,8 @@ pub mod color32_serde {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct LogColors {
     #[serde(with = "color32_serde")]
+    pub clock: Color32,
+    #[serde(with = "color32_serde")]
     pub slider: Color32,
     #[serde(with = "color32_serde")]
     pub option_a: Color32,
@@ -35,29 +37,24 @@ pub struct LogColors {
     #[serde(with = "color32_serde")]
     pub option_c: Color32,
     #[serde(with = "color32_serde")]
+    pub time_format: Color32,
+    #[serde(with = "color32_serde")]
     pub custom_event: Color32,
     #[serde(with = "color32_serde")]
     pub run_stop_log: Color32,
-    #[serde(with = "color32_serde")]
-    pub timestamp: Color32,
-    #[serde(with = "color32_serde")]
-    pub primary: Color32,
-    #[serde(with = "color32_serde")]
-    pub secondary: Color32,
 }
 
 impl Default for LogColors {
     fn default() -> Self {
         Self {
-            slider: Color32::from_rgb(32, 111, 32),  // Soft green
+            clock: Color32::from_rgb(100, 200, 255),  // Light blue
+            slider: Color32::from_rgb(255, 180, 100),  // Orange
             option_a: Color32::from_rgb(255, 150, 150),  // Soft red
             option_b: Color32::from_rgb(150, 255, 150),  // Soft green
             option_c: Color32::from_rgb(150, 150, 255),  // Soft blue
-            custom_event: Color32::from_rgb(255, 255, 0),  // Yellow
-            run_stop_log: Color32::from_rgb(255, 128, 0),  // Orange
-            timestamp: Color32::from_rgb(32, 100, 32), // Light Green
-            primary: Color32::from_rgb(32, 111, 32), // Soft green
-            secondary: Color32::from_rgb(255, 255, 255), // White
+            time_format: Color32::from_rgb(180, 180, 180),  // Gray
+            custom_event: Color32::from_rgb(255, 255, 100),  // Yellow
+            run_stop_log: Color32::from_rgb(100, 200, 255),  // Light blue
         }
     }
 }
@@ -66,19 +63,63 @@ impl Default for LogColors {
 impl LogColors {
     #[allow(dead_code)]
     pub fn load() -> Self {
-        let config_path = PathBuf::from("examples/template_example/log_colors.json");
-        if let Ok(file_content) = fs::read_to_string(config_path) {
-            if let Ok(colors) = serde_json::from_str(&file_content) {
-                return colors;
+        let config_dir = dirs::config_dir()
+            .unwrap_or_else(|| PathBuf::from("."))
+            .join("egui_mobius_template");
+        let config_path = config_dir.join("log_colors.json");
+        
+        println!("Loading colors from: {}", config_path.display());
+        
+        match fs::read_to_string(&config_path) {
+            Ok(file_content) => {
+                match serde_json::from_str(&file_content) {
+                    Ok(colors) => {
+                        println!("Successfully loaded colors from file");
+                        colors
+                    }
+                    Err(e) => {
+                        eprintln!("Failed to parse colors JSON: {}", e);
+                        Self::default()
+                    }
+                }
+            }
+            Err(e) => {
+                eprintln!("Failed to read colors file: {}", e);
+                Self::default()
             }
         }
-        Self::default()
     }
 
     #[allow(dead_code)]
     pub fn save(&self) {
-        if let Ok(json) = serde_json::to_string_pretty(self) {
-            let _ = fs::write("examples/template_example/log_colors.json", json);
-        }
+        let colors = self.clone();
+        std::thread::spawn(move || {
+            // Get config directory path
+            let config_dir = dirs::config_dir()
+                .unwrap_or_else(|| PathBuf::from("."))
+                .join("egui_mobius_template");
+            
+            // Create config directory if it doesn't exist
+            if let Err(e) = fs::create_dir_all(&config_dir) {
+                eprintln!("Failed to create config directory: {}", e);
+                return;
+            }
+            
+            // Create config file path
+            let config_path = config_dir.join("log_colors.json");
+            
+            // Serialize colors to JSON
+            match serde_json::to_string_pretty(&colors) {
+                Ok(json) => {
+                    // Write JSON to file
+                    if let Err(e) = fs::write(&config_path, json) {
+                        eprintln!("Failed to write colors to {}: {}", config_path.display(), e);
+                    } else {
+                        println!("Successfully saved colors to {}", config_path.display());
+                    }
+                },
+                Err(e) => eprintln!("Failed to serialize colors: {}", e),
+            }
+        });
     }
 }

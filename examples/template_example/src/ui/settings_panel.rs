@@ -1,15 +1,19 @@
 use eframe::egui;
-use egui_mobius_template::{TerminalWidget, LogType};
+use std::collections::VecDeque;
+use std::sync::{Arc, Mutex};
+use egui_mobius_template::{TerminalWidget, LogType, MAX_LOGS, LogColors};
 use egui_mobius_widgets::{StatefulButton, StyledButton};
 #[allow(unused_imports)]
 use crate::{set_timestamp_log, set_slider_log, set_combo_log, log_to_terminal};
 use crate::logging_macros::Latch;
+
 
 pub struct SettingsPanel<'a> {
     terminal_widget: &'a mut TerminalWidget,
     slider_value: &'a mut f32,
     selected_option: &'a mut usize,
     is_running: &'a mut bool,
+    colors: &'a Arc<Mutex<LogColors>>,
 }
 
 impl<'a> SettingsPanel<'a> {
@@ -18,12 +22,14 @@ impl<'a> SettingsPanel<'a> {
         slider_value: &'a mut f32,
         selected_option: &'a mut usize,
         is_running: &'a mut bool,
+        colors: &'a Arc<Mutex<LogColors>>,
     ) -> Self {
         Self {
             terminal_widget,
             slider_value,
             selected_option,
             is_running,
+            colors,
         }
     }
 
@@ -33,14 +39,82 @@ impl<'a> SettingsPanel<'a> {
         slider_value: &'a mut f32,
         selected_option: &'a mut usize,
         is_running: &'a mut bool,
+        colors: &'a Arc<Mutex<LogColors>>,
     ) {
-        let mut panel = Self::new(terminal_widget, slider_value, selected_option, is_running);
+        let mut panel = Self::new(terminal_widget, slider_value, selected_option, is_running, colors);
         panel.ui(ui);
     }
 
     pub fn ui(&mut self, ui: &mut egui::Ui) {
         ui.vertical(|ui| {
             ui.heading("Settings");
+            ui.add_space(8.0);
+
+            // Color settings
+            ui.push_id("log_colors_section", |ui| {
+                ui.collapsing("🎨 Log Colors", |ui| {
+                    // Get a copy of the colors first
+                    let mut colors = if let Ok(colors) = self.colors.lock() {
+                        colors.clone()
+                    } else {
+                        return; // Lock failed, skip this frame
+                    };
+                    
+                    let mut changed = false;
+
+                    ui.horizontal(|ui| {
+                        ui.label("Slider:");
+                        changed |= ui.color_edit_button_srgba(&mut colors.slider).changed();
+                    });
+
+                    ui.horizontal(|ui| {
+                        ui.label("Option A:");
+                        changed |= ui.color_edit_button_srgba(&mut colors.option_a).changed();
+                    });
+
+                    ui.horizontal(|ui| {
+                        ui.label("Option B:");
+                        changed |= ui.color_edit_button_srgba(&mut colors.option_b).changed();
+                    });
+
+                    ui.horizontal(|ui| {
+                        ui.label("Option C:");
+                        changed |= ui.color_edit_button_srgba(&mut colors.option_c).changed();
+                    });
+
+                    ui.horizontal(|ui| {
+                        ui.label("Custom Event:");
+                        changed |= ui.color_edit_button_srgba(&mut colors.custom_event).changed();
+                    });
+
+                    ui.horizontal(|ui| {
+                        ui.label("Run/Stop:");
+                        changed |= ui.color_edit_button_srgba(&mut colors.run_stop_log).changed();
+                    });
+
+                    ui.horizontal(|ui| {
+                        ui.label("Time Format:");
+                        changed |= ui.color_edit_button_srgba(&mut colors.time_format).changed();
+                    });
+
+                    ui.horizontal(|ui| {
+                        ui.label("Clock:");
+                        changed |= ui.color_edit_button_srgba(&mut colors.clock).changed();
+                    });
+
+                    if changed {
+                        // Update terminal widget colors
+                        self.terminal_widget.update_colors(colors.clone());
+                        
+                        // Update shared colors
+                        if let Ok(mut shared_colors) = self.colors.lock() {
+                            *shared_colors = colors;
+                        }
+                        
+                        self.terminal_widget.repaint.request_repaint();
+                    }
+                });
+            });
             ui.add_space(8.0);
 
             // System Info
@@ -54,7 +128,7 @@ impl<'a> SettingsPanel<'a> {
             // Clear Logger button
             ui.horizontal(|ui| {
                 if ui.button("Clear Logger").clicked() {
-                    self.terminal_widget.logs.set(Vec::new());
+                    self.terminal_widget.logs.set(VecDeque::with_capacity(MAX_LOGS));
                     self.terminal_widget.repaint.request_repaint();
                 }
             });
@@ -101,60 +175,13 @@ impl<'a> SettingsPanel<'a> {
 
             if event_button.show(ui).clicked() {
                 let mut logs = self.terminal_widget.logs.get();
-                logs.push((format!("Custom event triggered with slider={:.1}", self.slider_value), LogType::CustomEvent));
+                logs.push_back((format!("Custom event triggered with slider={:.1}", self.slider_value), LogType::CustomEvent));
                 self.terminal_widget.logs.set(logs);
                 self.terminal_widget.repaint.request_repaint();
             }
             ui.add_space(8.0);
 
-            // Log Colors Section
-            ui.collapsing("🎨 Log Colors", |ui| {
-                let mut colors = self.terminal_widget.colors.get();
 
-                ui.horizontal(|ui| {
-                    ui.label("Slider Events:");
-                    if ui.color_edit_button_srgba(&mut colors.slider).changed() {
-                        self.terminal_widget.update_colors(colors.clone());
-                    }
-                });
-
-                ui.horizontal(|ui| {
-                    ui.label("Option A:");
-                    if ui.color_edit_button_srgba(&mut colors.option_a).changed() {
-                        self.terminal_widget.update_colors(colors.clone());
-                    }
-                });
-
-                ui.horizontal(|ui| {
-                    ui.label("Option B:");
-                    if ui.color_edit_button_srgba(&mut colors.option_b).changed() {
-                        self.terminal_widget.update_colors(colors.clone());
-                    }
-                });
-
-                ui.horizontal(|ui| {
-                    ui.label("Option C:");
-                    if ui.color_edit_button_srgba(&mut colors.option_c).changed() {
-                        self.terminal_widget.update_colors(colors.clone());
-                    }
-                });
-
-                ui.horizontal(|ui| {
-                    ui.label("Custom Events:");
-                    if ui.color_edit_button_srgba(&mut colors.custom_event).changed() {
-                        self.terminal_widget.update_colors(colors.clone());
-                    }
-                });
-
-                ui.horizontal(|ui| {
-                    ui.label("RUN/STOP Events:");
-                    if ui.color_edit_button_srgba(&mut colors.run_stop_log).changed() {
-                        self.terminal_widget.update_colors(colors.clone());
-                    }
-                });
-                self.terminal_widget.repaint.request_repaint();
-            });
-            ui.add_space(8.0);
 
             // Run/Stop button using StatefulButton
             let mut stateful_button = StatefulButton::new()
@@ -170,7 +197,7 @@ impl<'a> SettingsPanel<'a> {
                 *self.is_running = !*self.is_running;
                 let msg = format!("System {}", if *self.is_running { "started" } else { "stopped" });
                 let mut logs = self.terminal_widget.logs.get();
-                logs.push((msg, LogType::RunStop));
+                logs.push_back((msg, LogType::RunStop));
                 self.terminal_widget.logs.set(logs);
                 self.terminal_widget.repaint.request_repaint();
             }
