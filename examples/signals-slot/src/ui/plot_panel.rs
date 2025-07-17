@@ -41,13 +41,11 @@ pub fn show_plot_panel(ui: &mut Ui, state: &Arc<AppState>) {
                     .map(|(&t, &i)| [t, i])
                     .collect();
 
-                plot_ui.line(Line::new(voltage_points)
-                    .name("Voltage")
+                plot_ui.line(Line::new("Voltage", voltage_points)
                     .color(Color32::from_rgb(100, 200, 255))
                     .width(2.0));
                     
-                plot_ui.line(Line::new(current_points)
-                    .name("Current")
+                plot_ui.line(Line::new("Current", current_points)
                     .color(Color32::from_rgb(255, 150, 150))
                     .width(2.0));
             });

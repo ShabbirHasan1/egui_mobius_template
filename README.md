@@ -9,10 +9,10 @@
 [![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/saturn77/egui_mobius_template)
 [![Author](https://img.shields.io/badge/author-saturn77-orange)](https://github.com/saturn77)
 
-[![egui](https://img.shields.io/badge/egui-0.31.1-blue)](https://github.com/emilk/egui)
-[![egui_mobius_reactive](https://img.shields.io/badge/egui__mobius__reactive-0.3.0--alpha.25-blue)](https://github.com/saturn77/egui_mobius_reactive)
-[![egui_mobius_widgets](https://img.shields.io/badge/egui__mobius__widgets-0.3.0--alpha.25-blue)](https://github.com/saturn77/egui_mobius_widgets)
-[![egui_taffy](https://img.shields.io/badge/egui__taffy-0.7.0-blue)](https://github.com/Veykril/egui_taffy)
+[![egui](https://img.shields.io/badge/egui-0.32-blue)](https://github.com/emilk/egui)
+[![egui_mobius_reactive](https://img.shields.io/badge/egui__mobius__reactive-0.3.0--alpha.32-blue)](https://github.com/saturn77/egui_mobius_reactive)
+[![egui_mobius_widgets](https://img.shields.io/badge/egui__mobius__widgets-0.3.0--alpha.32-blue)](https://github.com/saturn77/egui_mobius_widgets)
+[![egui_dock](https://img.shields.io/badge/egui__dock-0.17.0-blue)](https://github.com/luca-della-vedova/egui_dock)
 
 </div>
 
@@ -25,16 +25,18 @@ A comprehensive collection of templates for building modern GUI applications wit
 - Best for: UI-focused applications with real-time state updates
 - Features: Color picker, logging system, dockable panels
 
+![alt text](assets/reactive-example.gif)
+
 ### 2. Reactive-Async Template (`examples/reactive-async`)
 - Combines reactive patterns with async runtime integration
 - Best for: Applications requiring background processing or I/O
 - Features: All reactive features plus `MobiusRuntime` integration
-
+![alt text](assets/reactive-async-example.gif)
 ### 3. Signal-Slots Template (`examples/signal-slots`)
 - Event-driven architecture for heavy processing
 - Best for: CPU-intensive applications, complex data processing
 - Features: Signal-slot pattern for decoupled communication
-
+![alt text](assets/signals-slots-example.gif)
 A comprehensive template for building modern, reactive GUI applications with `egui` and `egui_mobius`. This template demonstrates best practices for creating responsive, thread-aware applications using the powerful features of the `egui_mobius` framework.
 
 ## Getting Started
@@ -94,11 +96,35 @@ A comprehensive template for building modern, reactive GUI applications with `eg
 
 ## Dependencies
 
-- `egui` - Immediate mode GUI framework
-- `egui_mobius` - Reactive programming framework
-- `egui_dock` - Docking system for panel management
-- `serde` - Serialization for settings
-- `once_cell` - Static initialization
+### Core GUI Framework
+- `egui` (0.32) - Immediate mode GUI framework
+- `eframe` (0.32) - Framework for egui applications
+- `egui_extras` (0.32) - Additional utilities and image loading support
+
+### Mobius Framework
+- `egui_mobius` (0.3.0-alpha.32) - Core reactive programming framework
+- `egui_mobius_reactive` (0.3.0-alpha.32) - Reactive state management
+- `egui_mobius_widgets` (0.3.0-alpha.32) - Custom widgets
+
+### Layout & UI
+- `egui_dock` (0.17.0) - Docking system for panel management
+- `egui_plot` (0.33.0) - Plotting and data visualization
+
+### Utilities
+- `serde` (1.0) - Serialization for settings
+- `serde_json` (1.0) - JSON support
+- `once_cell` (1.19) - Static initialization
+- `chrono` (0.4) - Date and time handling
+- `image` (0.24) - Image loading and processing
+- `dirs` (5.0) - Platform-specific directory paths
+
+### Async & Logging
+- `tokio` (1.44.1) - Async runtime with full features
+- `env_logger` (0.11.7) - Logging implementation
+- `log` (0.4.27) - Logging facade
+
+### Data Processing
+- `ndarray` (0.16.1) - N-dimensional arrays for numerical computing
 
 ## Contributing
 

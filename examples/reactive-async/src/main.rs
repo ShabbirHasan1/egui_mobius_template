@@ -16,7 +16,7 @@ mod state;
 mod runtime_integration;
 mod types;
 
-use ui::{settings_panel, control_panel, TaffyPanel};
+use ui::{settings_panel, control_panel};
 use egui_mobius_template::{TerminalWidget, LogColors};
 use egui_mobius_reactive::Dynamic;
 use state::AppState;
@@ -24,7 +24,7 @@ use runtime_integration::RuntimeManager;
 
 // egui and egui_dock crates
 use eframe::egui;
-use egui_dock::{DockArea, DockState, NodeIndex, Style, SurfaceIndex};
+use egui_dock::{DockArea, DockState, NodeIndex, SurfaceIndex};
 
 // Standard library
 use std::sync::{Arc, Mutex};
@@ -38,7 +38,6 @@ enum TabKind {
     Control,
     About,
     Logger,  // New tab for enhanced logging
-    Taffy,   // Demo of egui_taffy layout
 }
 
 /// Tab
@@ -66,7 +65,6 @@ impl Tab {
             TabKind::Control => "Control".to_string(),
             TabKind::About => "About".to_string(),
             TabKind::Logger => "Logger".to_string(),
-            TabKind::Taffy => "Taffy Layout".to_string(),
         }
     }
     fn content(&self, ui: &mut egui::Ui, terminal_widget: &mut TerminalWidget, 
@@ -92,9 +90,6 @@ impl Tab {
             }
             TabKind::Logger => {
                 crate::ui::logger_panel::LoggerPanel::render(ui, terminal_widget);
-            }
-            TabKind::Taffy => {
-                TaffyPanel::render(ui);
             }
         }
     }
@@ -169,7 +164,6 @@ impl eframe::App for MyApp {
 
         DockArea::new(&mut self.dock_state)
             .show_add_buttons(true)
-            .style(Style::from_egui(ctx.style().as_ref()))
             .show(
                 ctx,
                 &mut TabViewer {
@@ -223,7 +217,6 @@ fn main() -> Result<(), eframe::Error> {
             let mut dock_state = DockState::new(vec![
                 Tab::new(TabKind::Control, SurfaceIndex::main(), NodeIndex(0)),
                 Tab::new(TabKind::About, SurfaceIndex::main(), NodeIndex(1)),
-                Tab::new(TabKind::Taffy, SurfaceIndex::main(), NodeIndex(2)),
             ]);
 
             // Initialize dock layout
